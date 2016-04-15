@@ -70,6 +70,27 @@ class Agent(object):
             else:
                 score += 11
         return score 
+    def get_count(self):
+        count = 0
+        for c in self.hand:
+            if type(c.rank) is int:
+                if c.rank < 7:
+                    count += 1
+                elif c.rank is 7:
+                    count += 0
+                elif c.rank is 8:
+                    count += 0
+                elif c.rank is 9:
+                    count += 0
+                else:
+                    count += -1
+            else:
+                count += -1
+             
+            
+        return count
+         
+                
         
 class Player(Agent):
     def __init__(self):
