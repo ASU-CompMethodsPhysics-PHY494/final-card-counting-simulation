@@ -89,9 +89,8 @@ class Agent(object):
              
             
         return count
-         
-                
-        
+    
+             
 class Player(Agent):
     def __init__(self):
         super(Player,self).__init__()
