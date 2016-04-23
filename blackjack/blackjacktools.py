@@ -99,7 +99,11 @@ class Agent(object):
                 else:
                     count += -1
             else:
+<<<<<<< HEAD
                 count += -1
+=======
+                count += -1    
+>>>>>>> 8214ed4a1b3a28328d7a44d391f629445757c5f4
         return count
     
     def get_balance(self):
