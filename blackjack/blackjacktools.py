@@ -34,6 +34,7 @@ class Deck(object):
                 self.cards.append(card)
         else:
             self.cards.append(card)
+            
     def deal(self):
         if self.__len__() == 0:
             print("Deck is empty!")
@@ -49,13 +50,25 @@ class Deck(object):
     def __len__(self):
         return len(self.cards)
     
+deck = Deck()    
+deck.shuffle()
+    
 class Agent(object):
     def __init__(self):
         self.hand = []
+        
     def add_card(self,card):
         self.hand.append(card)
+        
     def clear_hand(self):
         self.hand = []
+        
+    def get_hand(self):
+        for n in range(2): 
+            card = deck.deal()
+            self.add_card(card)
+        print([c.info() for c in self.hand])
+        
     def get_score(self):
         score = 0
         aces = []
@@ -69,7 +82,8 @@ class Agent(object):
                 score += 1
             else:
                 score += 11
-        return score 
+        return score
+    
     def get_count(self):
         count = 0
         for c in self.hand:
@@ -86,10 +100,60 @@ class Agent(object):
                     count += -1
             else:
                 count += -1
-             
-            
         return count
     
+    def get_balance(self):
+        money = 0   #Start out with this much money per player, can change this from zero whenever
+        
+#        if player_win == True:
+#            money += 500   #This is the winning pot from the game, need to implement this code elsewhere. 500 is a placeholder for now.
+#        if player_win == False:
+#            money += 0   #If you lose, you don't get money (obviously)
+#        if player_large_blind == True:
+#            money -= 10  #If you are the large blind, you pay this amount
+#        if player_small_blind == True:
+#            money -= 5   #If you are the small blind, you pay this amount
+
+        return money
+
+    def hit(self):        #Finished!
+        card = deck.deal()    #Create a local "card" object
+        self.add_card(card)   #Add a card to the player's hand
+        self.get_score()      #Retrieve the player's score
+        if self.get_score() > 21:
+            print("Player chose to hit but... Bust!")
+            print([c.info() for c in self.hand])
+        else:
+            print("Player chose to hit!")
+            print([c.info() for c in self.hand])
+        return self.get_score()
+                    
+    def stay(self):        #Finished!
+        print("Player chose to stay!")
+        return self.get_score()
+    
+    def auto_move(self):           #Implemented a basic version, still need to add the card counting rules
+        print(self.get_score())
+        while self.get_score() <= 21:
+            if 16 < self.get_score() < 21:   #If player's score is between 16 and 21, the player stays and program prints cards/score
+                self.stay()
+                print([c.info() for c in self.hand])
+                break
+            elif self.get_score() == 21:     #If player gets blackjack, output "Blackjack!" and break the loop
+                print("Blackjack!")
+                print([c.info() for c in self.hand])
+                break
+            elif self.get_score() > 21:     #If player's score is greater than 21 off the bat (for error-proofing), break the loop
+                print("Ummm something went wrong...")
+                break
+            else:               #If player's score is less than 17, the player hits until one of the other criterias is met
+                self.hit()
+                if self.get_score() == 21:    #If player hits to 21, print the message and break the loop
+                    print("Player gets 21!")
+                    print([c.info() for c in self.hand])
+                    print(self.get_score())
+                    break
+        return self.get_score()
              
 class Player(Agent):
     def __init__(self):
