@@ -98,16 +98,24 @@ class Agent(object):
                     count += 0
                 else:
                     count += -1
-            else:
-<<<<<<< HEAD
-                count += -1
-=======
-                count += -1    
->>>>>>> 8214ed4a1b3a28328d7a44d391f629445757c5f4
         return count
     
-    def get_balance(self):
+    def get_balance(self,bank_roll,small_bet,med_bet,large_bet):
         money = 0   #Start out with this much money per player, can change this from zero whenever
+        
+        money += bankroll
+        if get_count() < 3 and player_win == true:
+            money += small_bet
+        elif get_count() < 3 and player_win == false:
+            money -= small_bet()
+        elif 3 < get_count() < 10 and player_win == true:
+            money += med_bet
+        elif 3 < get_count() < 10 and player_win == false:
+            money -= small_bet
+        elif get_count() > 10 and player_win == true:
+            money += large_bet
+        else:
+            money -= large_bet
         
 #        if player_win == True:
 #            money += 500   #This is the winning pot from the game, need to implement this code elsewhere. 500 is a placeholder for now.
@@ -115,8 +123,7 @@ class Agent(object):
 #            money += 0   #If you lose, you don't get money (obviously)
 #        if player_large_blind == True:
 #            money -= 10  #If you are the large blind, you pay this amount
-#        if player_small_blind == True:
-#            money -= 5   #If you are the small blind, you pay this amount
+
 
         return money
 
