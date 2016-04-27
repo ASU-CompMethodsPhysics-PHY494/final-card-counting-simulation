@@ -105,21 +105,6 @@ class Agent(object):
     
     def get_balance(self):
         return self.bank_roll
-    
-    def compute_gains(self,bank_roll,small_bet,med_bet,large_bet):
-        money = self.bank_roll   #Start out with this much money per player, can change this from zero whenever
-        if self.get_count() < 3 and player_win is True:
-            money += small_bet
-        elif self.get_count() < 3 and player_win is False:
-            money -= small_bet()
-        elif 3 < self.get_count() < 10 and player_win is True:
-            money += med_bet
-        elif 3 < self.get_count() < 10 and player_win is False:
-            money -= small_bet
-        elif self.get_count() > 10 and player_win is True:
-            money += large_bet
-        else:
-            money -= large_bet
 
     def hit(self):        #Finished!
         card = deck.deal()    #Create a local "card" object
@@ -164,7 +149,91 @@ class Player(Agent):
     def __init__(self):
         super(Player,self).__init__()
         
+    def compute_gains(self,small_bet,med_bet,large_bet):
+        money = self.bank_roll   #Start out with this much money per player, can change this from zero whenever
+        
+        #if neither the player or dealer wins, the player doesn'y gain or lose any money. 
+        
+        winner = Table.pvd(self)
+        
+        if winner is None:
+            pass
+            
+        #The following tells the player how to bet. Given the count, the player bets a set amount of money. It is intuitively obious to the casual observer that they get the money back if they win, and lose the money if they don't.
+        else:
+            if winner is self:
+                if self.get_count() < 3:
+                    money += small_bet
+                if (3 <= self.get_count()) and (self.get_count() <= 10):
+                    money += med_bet
+                if self.get_count() > 10: 
+                    money += large_bet
+            if winner is not self and winner is not None:
+                if self.get_count() < 3:
+                    money -= small_bet
+                if (3 <= self.get_count()) and (self.get_count() <= 10):
+                    money -= med_bet
+                if self.get_count() > 10: 
+                    money -= large_bet
+        
 class Dealer(Agent):
     def __init__(self):
         super(Dealer,self).__init__()
-    
+        
+class Table(object):
+    def __init__(self):
+        self.P = []
+        self.D = Dealer()
+        self.deck = Deck()
+        self.num_decks = None
+        self.current_count = None
+        
+    def shuffle_deck(self,n=3):
+        self.current_count = 0
+        self.num_decks = n
+        self.deck.shuffle(n=n)
+        
+    def set_players(self,players):
+        self.P = players
+        
+    def pvd(self, player):
+        #Defines win/loss, player is returned if player wins, dealer is returned if player loses
+        if player.get_score() == 21:
+            if len(player.get_hand()) == 2:
+                return player
+            if len(player.get_hand()) > 2:
+                if self.D.get_score() < 21:
+                    return player
+        if player.get_score() == self.D.get_score():
+            return None
+        if player.get_score() > 21:
+            return self.D
+        if self.D.get_score() > 21 and player.get_score() <= 21: 
+            return player
+        if player.get_score() < 21 and self.D.get_score() < 21:
+            if self.D.get_score() < player.get_score():
+                return self.D
+            else: 
+                return player
+    def run(self,max_hands=800):
+        ### RUN SIMULATION HERE
+        balances = np.zeros((len(self.P),max_hands))
+        player_status = np.array([True for _ in range(len(self.P))])
+        for N in range(max_hands):
+            if any(player_status):
+                # Players and Dealer are dealt initial cards (2)
+                # Players automove loop
+                # Dealer automove
+                num_deck = len(self.deck)//52
+                # For loop through players to determine new balances (example below)
+                for i,p in enumerate(self.P):
+                    p.compute_gains()
+                    balances[i,N] = p.get_balance()
+                    if (some conditions of total failure):
+                        player_status[i] = False
+                    self.current_count += p.get_count()//num_deck
+                self.current_count += self.D.get_count()//num_deck
+                
+                    
+                
+            
