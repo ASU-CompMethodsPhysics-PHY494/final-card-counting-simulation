@@ -100,32 +100,26 @@ class Agent(object):
                     count += -1
         return count
     
-    def get_balance(self,bank_roll,small_bet,med_bet,large_bet):
-        money = 0   #Start out with this much money per player, can change this from zero whenever
-        
-        money += bankroll
-        if get_count() < 3 and player_win == true:
+    def set_balance(self,new_balance):
+        self.bank_roll = new_balance
+    
+    def get_balance(self):
+        return self.bank_roll
+    
+    def compute_gains(self,bank_roll,small_bet,med_bet,large_bet):
+        money = self.bank_roll   #Start out with this much money per player, can change this from zero whenever
+        if self.get_count() < 3 and player_win is True:
             money += small_bet
-        elif get_count() < 3 and player_win == false:
+        elif self.get_count() < 3 and player_win is False:
             money -= small_bet()
-        elif 3 < get_count() < 10 and player_win == true:
+        elif 3 < self.get_count() < 10 and player_win is True:
             money += med_bet
-        elif 3 < get_count() < 10 and player_win == false:
+        elif 3 < self.get_count() < 10 and player_win is False:
             money -= small_bet
-        elif get_count() > 10 and player_win == true:
+        elif self.get_count() > 10 and player_win is True:
             money += large_bet
         else:
             money -= large_bet
-        
-#        if player_win == True:
-#            money += 500   #This is the winning pot from the game, need to implement this code elsewhere. 500 is a placeholder for now.
-#        if player_win == False:
-#            money += 0   #If you lose, you don't get money (obviously)
-#        if player_large_blind == True:
-#            money -= 10  #If you are the large blind, you pay this amount
-
-
-        return money
 
     def hit(self):        #Finished!
         card = deck.deal()    #Create a local "card" object
