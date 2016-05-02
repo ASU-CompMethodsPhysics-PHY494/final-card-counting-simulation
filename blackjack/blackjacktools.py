@@ -38,7 +38,6 @@ class Deck(object):
             
     def deal(self):
         if self.__len__() == 0:
-            print("Deck is empty!")
             return Card(None,None)
         return self.cards.pop(random.randrange(0,len(self.cards)))
 
@@ -63,12 +62,6 @@ class Agent(object):
         
     def clear_hand(self):
         self.hand = []
-        
-    def get_hand(self):
-        for n in range(2): 
-            card = deck.deal()
-            self.add_card(card)
-        print([c.info() for c in self.hand])
         
     def get_score(self):
         score = 0
@@ -107,78 +100,60 @@ class Agent(object):
     def get_balance(self):
         return self.bank_roll
 
-    def hit(self):        #Finished!
-        card = deck.deal()    #Create a local "card" object
-        self.add_card(card)   #Add a card to the player's hand
-        self.get_score()      #Retrieve the player's score
-        if self.get_score() > 21:
-            print("Player chose to hit but... Bust!")
-            print([c.info() for c in self.hand])
-        else:
-            print("Player chose to hit!")
-            print([c.info() for c in self.hand])
-        return self.get_score()
-                    
-    def stay(self):        #Finished!
-        print("Player chose to stay!")
-        return self.get_score()
+    def hit(self, deck):
+        self.add_card(deck.deal())   #Add a card to the player's hand
     
-    def auto_move(self):           #Implemented a basic version, still need to add the card counting rules
-        print(self.get_score())
+    def auto_move(self, deck):           #Implemented a basic version, still need to add the card counting rules
         while self.get_score() <= 21:
             if 16 < self.get_score() < 21:   #If player's score is between 16 and 21, the player stays and program prints cards/score
-                self.stay()
-                print([c.info() for c in self.hand])
                 break
             elif self.get_score() == 21:     #If player gets blackjack, output "Blackjack!" and break the loop
-                print("Blackjack!")
-                print([c.info() for c in self.hand])
                 break
             elif self.get_score() > 21:     #If player's score is greater than 21 off the bat (for error-proofing), break the loop
-                print("Ummm something went wrong...")
                 break
             else:               #If player's score is less than 17, the player hits until one of the other criterias is met
-                self.hit()
+                self.hit(deck)
                 if self.get_score() == 21:    #If player hits to 21, print the message and break the loop
-                    print("Player gets 21!")
-                    print([c.info() for c in self.hand])
-                    print(self.get_score())
                     break
         return self.get_score()
              
 class Player(Agent):
-    def __init__(self,small_bet,large_bet):
+    def __init__(self,small_bet,large_bet,bank_roll=5000):
         super(Player,self).__init__()
         self.small_bet = small_bet
         self.large_bet = large_bet
+        self.med_bet = .5*(small_bet + large_bet)
+        self.bank_roll = bank_roll
        
         
-    def compute_gains(self,count):
-        money = self.bank_roll   #Start out with this much money per player, can change this from zero whenever
-        
+    def compute_gains(self,count, table):
         #if neither the player or dealer wins, the player doesn'y gain or lose any money. 
         
-        winner = Table.pvd(self)
+        small_bet = self.small_bet
+        med_bet = self.med_bet
+        large_bet = self.large_bet
         
+        winner = table.pvd(self)
         if winner is None:
+            #print("Nobody fucking won")
             pass
             
         #The following tells the player how to bet. Given the count, the player bets a set amount of money. It is intuitively obious to the casual observer that they get the money back if they win, and lose the money if they don't.
         else:
             if winner is self:
                 if count < -1:
-                    money += small_bet
+                    self.bank_roll += small_bet
                 if (-1 <= count) and (count <= 1):
-                    money += med_bet
+                    self.bank_roll += med_bet
                 if count > 1: 
-                    money += large_bet
+                    self.bank_roll += large_bet
             if winner is not self and winner is not None:
                 if count < -1:
-                    money -= small_bet
+                    self.bank_roll -= small_bet
                 if (-1 <= count) and (count <= 1):
-                    money -= med_bet
+                    self.bank_roll -= med_bet
                 if count > 1: 
-                    money -= large_bet
+                    self.bank_roll -= large_bet
         
 class Dealer(Agent):
     def __init__(self):
@@ -203,9 +178,9 @@ class Table(object):
     def pvd(self, player):
         #Defines win/loss, player is returned if player wins, dealer is returned if player loses
         if player.get_score() == 21:
-            if len(player.get_hand()) == 2:
+            if len(player.hand) == 2:
                 return player
-            if len(player.get_hand()) > 2:
+            if len(player.hand) > 2:
                 if self.D.get_score() < 21:
                     return player
         if player.get_score() == self.D.get_score():
@@ -224,22 +199,27 @@ class Table(object):
         balances = np.zeros((len(self.P),max_hands))
         player_status = np.array([True for _ in range(len(self.P))])
         for N in range(max_hands):
+            #print('{}\r'.format(N))
             previous_count = self.current_count
             if any(player_status):
-                deck.deal()
-                players.auto_move
-                self.D.auto_move
-                num_deck = len(self.deck)//52    
+                for i, p in enumerate(self.P):
+                    [p.add_card(self.deck.deal()) for _ in range(2)]
+                    p.auto_move(self.deck)
+                [self.D.add_card(self.deck.deal()) for _ in range(2)]
+                self.D.auto_move(self.deck)   
+                num_deck = (len(self.deck)//52)+1  
                 # For loop through players to determine new balances (example below)
                 for i,p in enumerate(self.P):
-                    p.compute_gains(previous_count)
+                    p.compute_gains(previous_count, self)
                     balances[i,N] = p.get_balance()
-                    if self.bank_roll <=0:
+                    if p.bank_roll <=0:
                         player_status[i] = False
                     self.current_count += p.get_count()//num_deck
                 self.current_count += self.D.get_count()//num_deck
                 if len(self.deck) < 21:
-                    Table.shuffle_deck()
+                    self.shuffle_deck()
+            [x.clear_hand() for x in self.P + [self.D]]
+        return balances
                 
                     
                 
