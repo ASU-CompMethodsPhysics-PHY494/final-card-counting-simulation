@@ -1,4 +1,5 @@
 import random
+import numpy as np
 
 class Card(object):
     def __init__(self,rank,suit):
@@ -225,10 +226,10 @@ class Table(object):
         for N in range(max_hands):
             previous_count = self.current_count
             if any(player_status):
-                # Players and Dealer are dealt initial cards (2)
-                # Players automove loop
-                # Dealer automove
-                num_deck = len(self.deck)//52
+                deck.deal()
+                players.auto_move
+                self.D.auto_move
+                num_deck = len(self.deck)//52    
                 # For loop through players to determine new balances (example below)
                 for i,p in enumerate(self.P):
                     p.compute_gains(previous_count)
@@ -237,6 +238,8 @@ class Table(object):
                         player_status[i] = False
                     self.current_count += p.get_count()//num_deck
                 self.current_count += self.D.get_count()//num_deck
+                if len(self.deck) < 21:
+                    Table.shuffle_deck()
                 
                     
                 
