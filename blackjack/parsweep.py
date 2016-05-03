@@ -6,12 +6,8 @@
 import blackjacktools as bj
 import matplotlib.pyplot as plt
 
-
-
-# In[10]:
-
-M = 100
-Hmax = 150
+M = 150
+Hmax = 500
 Lmin = 50
 for H in range(M,Hmax,5):
     for L in range(Lmin,M,5):
@@ -21,11 +17,7 @@ for H in range(M,Hmax,5):
         bal = table.run(max_hands = 800)
         plt.title("{} {}".format(L,H))
         plt.plot(bal.T)
+        plt.ylim((0,25000))
         plt.savefig("img/{}_{}.pdf".format(L,H))
-        plt.show()
-
-
-# In[ ]:
-
-
+        plt.clf()
 
