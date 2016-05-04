@@ -1,7 +1,25 @@
-Blackjack Card Counting Simulation
+Why we are Dropping out of College: AKA Blackjack Card Counting 
+Simulation
 
 Ryan Heilman, Layne Bradshaw, Jacob Dwyer
 
-The purpose of this project was to determine whether or not card counting in the game of blackjack is a viable strategy for winning and money-making. This was interesting, as a successful implementation could show if vast amounts of money could be made by playing a card game. The major hurdles that needed to be overcome for a success was the implementation of code that could simultaneously run a card game, while keeping the “card count”, and solving the math required given by the “High-Lo” system. This was accomplished via rudimentary “artificial intelligence” that, through the use of self-defined functions, if/else statements, classes and objects, for/while loops, and numpy arrays could determine whether or not to hit, stay, or bet according to the cards and rules that were provided. Looking at the results produced by the simulations, the goal was definitely achieved. The plots provided show that for certain betting schemes, a large amount of money could be made over the course of a year, while for others, less money was made. Conclusively, found through this experiment, card-counting is a viable option for making plenty of money while playing blackjack.
+The purpose of this project was to determine not only whether or not 
+card counting in the game of blackjack is a viable strategy, but what a 
+successful betting scheme would look like. The major hurdles that needed 
+to be overcome for a success was the implementation of code that could 
+simultaneously run a card game, while keeping the card count, and 
+solving the math required given by the High-Lo  counting system. This 
+was accomplished via object oriented programming that would set up a 
+game with players and determine whether or not to hit/stay and how much 
+one should bet according to the cards and rules that were provided. The 
+simulation was successful in the sense that we found betting patterns 
+with net gains, while others produced large losses in a players 
+bankroll. With over 1000 simulations run, we found, for the most part, 
+that more conservative patterns led to larger overall gains. For 
+example, a strategy with wagers ranging from $145-$165 led to an annual 
+income between $250,000 and $350,000 per year.
 
-Code is available at: https://github.com/ASU-CompMethodsPhysics-PHY494/final-card-counting-simulation under the MIT License
+Code is available at: 
+https://github.com/ASU-CompMethodsPhysics-PHY494/final-card-counting-simulation 
+under the MIT License
+
